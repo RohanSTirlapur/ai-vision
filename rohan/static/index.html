@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PetVision AI – AI-Powered Pet Animal Recognition</title>
+  <meta name="description" content="Identify pet animal species (Dogs, Cats, Rabbits, Birds, Hamsters, Guinea Pigs, Fish, Turtles) using PyTorch deep learning models.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%22><text y=%22.9em%22 font-size=%2290%22>🐾</text></svg>">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-paw"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">PetVision <span class="ai-badge">AI</span></span>
+          <span class="brand-sub">Species Recognition Engine</span>
+        </div>
+      </div>
+      
+      <div class="nav-controls">
+        <div class="model-selector-group">
+          <label for="modelSelect" class="model-label">
+            <i class="fa-solid fa-microchip"></i> Model:
+          </label>
+          <select id="modelSelect" class="model-select">
+            <option value="efficientnet_b0" selected>EfficientNet-B0 (PyTorch Deep CNN)</option>
+            <option value="mobilenet_v3">MobileNet-V3 (PyTorch Lightweight)</option>
+          </select>
+        </div>
+        
+        <div class="system-status" id="systemStatus">
+          <span class="status-dot"></span>
+          <span class="status-text">PyTorch Ready</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-badge">
+        <i class="fa-solid fa-brain"></i> Powered by Transfer Learning Deep CNN
+      </div>
+      <h1 class="hero-title">
+        Identify Pet Animals with <span class="gradient-text">AI Vision</span>
+      </h1>
+      <p class="hero-desc">
+        Upload any pet photo. Our genuine deep learning image classifier instantly identifies which animal species is present across 8 supported categories.
+      </p>
+      
+      <!-- Supported Species Chips -->
+      <div class="supported-species-bar">
+        <span class="species-bar-label">Supported Species:</span>
+        <div class="species-chips-grid">
+          <span class="species-chip" data-species="Dog"><span class="chip-emoji">🐕</span> Dogs</span>
+          <span class="species-chip" data-species="Cat"><span class="chip-emoji">🐱</span> Cats</span>
+          <span class="species-chip" data-species="Rabbit"><span class="chip-emoji">🐰</span> Rabbits</span>
+          <span class="species-chip" data-species="Bird"><span class="chip-emoji">🦜</span> Birds</span>
+          <span class="species-chip" data-species="Hamster"><span class="chip-emoji">🐹</span> Hamsters</span>
+          <span class="species-chip" data-species="Guinea Pig"><span class="chip-emoji">🐹</span> Guinea Pigs</span>
+          <span class="species-chip" data-species="Fish"><span class="chip-emoji">🐠</span> Fish</span>
+          <span class="species-chip" data-species="Turtle"><span class="chip-emoji">🐢</span> Turtles</span>
+        </div>
+      </div>
+
+      <div class="scope-notice">
+        <i class="fa-solid fa-circle-info"></i>
+        <span><strong>Species Only:</strong> This model is specifically architected for animal species recognition, not breed differentiation.</span>
+      </div>
+    </section>
+
+    <!-- Workspace Grid -->
+    <div class="workspace-grid">
+      
+      <!-- Left Column: Upload & Preview Card -->
+      <div class="panel upload-panel">
+        
+        <!-- Step 1: Upload Dropzone (Visible when no image is loaded) -->
+        <div id="dropzoneContainer" class="dropzone-box">
+          <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/bmp" class="file-input-hidden">
+          
+          <div class="dropzone-content">
+            <div class="dropzone-icon-circle">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+            <h3 class="dropzone-title">Upload Pet Image</h3>
+            <p class="dropzone-subtitle">Drag and drop your image here, or browse from device</p>
+            
+            <div class="upload-buttons-row">
+              <button type="button" class="btn btn-primary" id="btnBrowseFile">
+                <i class="fa-solid fa-folder-open"></i> Upload Image
+              </button>
+              <button type="button" class="btn btn-secondary" id="btnCamera">
+                <i class="fa-solid fa-camera"></i> Camera
+              </button>
+            </div>
+            
+            <div class="format-hint">
+              <span>Supports JPG, PNG, WEBP</span>
+              <span class="dot-separator">•</span>
+              <span>Max size 15MB</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Image Preview Container (Visible once image is selected) -->
+        <div id="previewContainer" class="preview-box hidden">
+          <div class="preview-header">
+            <div class="file-meta">
+              <i class="fa-regular fa-image"></i>
+              <span id="previewFileName" class="file-name">pet-image.jpg</span>
+              <span id="previewFileSize" class="file-size">(0 KB)</span>
+            </div>
+            <button type="button" id="btnRemoveImage" class="btn-icon" title="Remove & Choose Another">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="preview-image-wrapper">
+            <img id="previewImage" src="" alt="Selected Pet Preview">
+            <div id="scanningOverlay" class="scanning-overlay hidden">
+              <div class="laser-beam"></div>
+              <div class="scanning-text">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Analyzing neural features...</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-actions">
+            <button type="button" class="btn btn-analyze" id="btnAnalyze">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              <span>Analyze Image</span>
+            </button>
+            <button type="button" class="btn btn-outline" id="btnChangeImage">
+              <i class="fa-solid fa-arrow-rotate-left"></i> Change Image
+            </button>
+          </div>
+        </div>
+
+
+
+      </div>
+
+      <!-- Right Column: Results & Knowledge Panel -->
+      <div class="panel results-panel">
+        
+        <!-- Placeholder State (Before Analysis) -->
+        <div id="emptyResultState" class="empty-results-box">
+          <div class="empty-icon-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </div>
+          <h3 class="empty-title">Ready for Analysis</h3>
+          <p class="empty-desc">
+            Select an image of a pet animal on the left and click <strong>"Analyze Image"</strong> to run deep neural inference.
+          </p>
+          <div class="steps-guide">
+            <div class="step-item">
+              <span class="step-num">1</span>
+              <span>Upload or select a pet image</span>
+            </div>
+            <div class="step-item">
+              <span class="step-num">2</span>
+              <span>Click "Analyze Image"</span>
+            </div>
+            <div class="step-item">
+              <span class="step-num">3</span>
+              <span>View species prediction</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Result State (After Analysis) -->
+        <div id="activeResultState" class="active-results-box hidden">
+          
+          <!-- Warning for non-supported animal/object -->
+          <div id="unsupportedWarning" class="alert-box alert-warning hidden">
+            <div class="alert-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div class="alert-body">
+              <h4 class="alert-title">Species Uncertainty Notice</h4>
+              <p id="unsupportedWarningText">
+                The image features low confidence for the 8 target pet species.
+              </p>
+            </div>
+          </div>
+
+          <!-- Main Prediction Header Card -->
+          <div class="prediction-card" id="predictionCard">
+            <div class="prediction-top-row">
+              <div class="prediction-identity">
+                <span class="prediction-emoji" id="resultEmoji">🐾</span>
+                <div class="prediction-titles">
+                  <span class="prediction-label">Identified Pet Species</span>
+                  <h2 class="prediction-species" id="resultSpeciesName">Dog</h2>
+                  <span class="prediction-scientific" id="resultScientificName">Canis lupus familiaris</span>
+                </div>
+              </div>
+
+              <!-- Confidence Radial / Badge -->
+              <div class="confidence-badge-block">
+                <div class="confidence-number">
+                  <span id="resultConfidenceVal">96.6</span><span class="percent-sign">%</span>
+                </div>
+                <span class="confidence-sub">Confidence Score</span>
+                <div class="confidence-tag" id="confidenceLevelTag">High Confidence</div>
+              </div>
+            </div>
+
+            <div class="prediction-meta-bar">
+              <div class="meta-item">
+                <i class="fa-solid fa-tag"></i>
+                <span class="meta-key">Recognition Type:</span>
+                <span class="meta-val">Species-Level Only</span>
+              </div>
+              <div class="meta-item">
+                <i class="fa-solid fa-stopwatch"></i>
+                <span class="meta-key">Inference Time:</span>
+                <span class="meta-val" id="resultInferenceTime">78 ms</span>
+              </div>
+              <div class="meta-item">
+                <i class="fa-solid fa-microchip"></i>
+                <span class="meta-key">Backbone:</span>
+                <span class="meta-val" id="resultModelName">EfficientNet-B0</span>
+              </div>
+            </div>
+          </div>
+
+
+
+          <!-- Deep Learning Diagnostics Dropdown/Details -->
+          <details class="diagnostics-details">
+            <summary class="diagnostics-summary">
+              <i class="fa-solid fa-sliders"></i> Deep Learning Model Diagnostics & Raw ImageNet Synsets
+            </summary>
+            <div class="diagnostics-content">
+              <div class="diag-grid">
+                <div class="diag-item">
+                  <span class="diag-label">Raw ImageNet Feature Match:</span>
+                  <span class="diag-val" id="diagRawLabel">Labrador retriever</span>
+                </div>
+                <div class="diag-item">
+                  <span class="diag-label">Raw Synset Confidence:</span>
+                  <span class="diag-val" id="diagRawConf">18.7%</span>
+                </div>
+                <div class="diag-item">
+                  <span class="diag-label">Resolution Processed:</span>
+                  <span class="diag-val" id="diagResolution">500 × 500 px</span>
+                </div>
+                <div class="diag-item">
+                  <span class="diag-label">Inference Hardware Device:</span>
+                  <span class="diag-val" id="diagDevice">CPU</span>
+                </div>
+                <div class="diag-item">
+                  <span class="diag-label">Total Pet Probability Density:</span>
+                  <span class="diag-val" id="diagDensity">96.5%</span>
+                </div>
+                <div class="diag-item">
+                  <span class="diag-label">Input Tensor Dimensions:</span>
+                  <span class="diag-val">1 × 3 × 224 × 224</span>
+                </div>
+              </div>
+            </div>
+          </details>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Camera Modal -->
+  <div id="cameraModal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-camera"></i> Capture Pet Photo</h3>
+        <button type="button" class="btn-icon" id="btnCloseCamera"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <video id="cameraVideo" autoplay playsinline class="camera-video"></video>
+        <canvas id="cameraCanvas" class="hidden"></canvas>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btnCancelCamera">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btnSnapPhoto">
+          <i class="fa-solid fa-camera-retro"></i> Capture & Use
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-left">
+        <span class="footer-brand">PetVision AI</span>
+        <span class="footer-sub">• AI-Powered Pet Animal Recognition</span>
+      </div>
+      <div class="footer-center">
+        <span>PyTorch Deep Learning • EfficientNet-B0 & MobileNet-V3 • 8 Species Categories</span>
+      </div>
+      <div class="footer-right">
+        <span>Built with Python & PyTorch</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
